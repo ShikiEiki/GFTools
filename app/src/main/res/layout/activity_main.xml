@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:layout_width="400px"
+                android:layout_height="200px"
+                android:text="Btn1"
+                android:textSize="70px"
+                android:onClick="onBtn1Click"
+                />
+            <Button
+                android:layout_width="400px"
+                android:layout_height="200px"
+                android:text="Btn2"
+                android:textSize="70px"
+                android:onClick="onBtn2Click"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:layout_width="400px"
+                android:layout_height="200px"
+                android:text="Btn3"
+                android:textSize="70px"
+                android:onClick="onBtn3Click"
+                />
+            <Button
+                android:layout_width="400px"
+                android:layout_height="200px"
+                android:text="Btn4"
+                android:textSize="70px"
+                android:onClick="onBtn4Click"
+                />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/imgview"
+            android:layout_width="500px"
+            android:layout_height="500px"
+            android:background="@android:color/holo_blue_light"/>
+    </LinearLayout>
+</layout>
