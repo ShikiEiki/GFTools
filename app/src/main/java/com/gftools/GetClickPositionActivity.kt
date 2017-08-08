@@ -1,11 +1,11 @@
-package com.frank.ktdemo
+package com.gftools
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import com.frank.ktdemo.databinding.ActivityGetClickPositionBinding
+import com.gftools.databinding.ActivityGetClickPositionBinding
 
 /**
  * Created by FH on 2017/8/1.

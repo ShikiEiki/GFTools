@@ -10,7 +10,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "26.0.0-rc1"
     defaultConfig {
-        applicationId "com.frank.ktdemo"
+        applicationId 'com.gftools'
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 1

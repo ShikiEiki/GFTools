@@ -1,4 +1,4 @@
-package com.frank.ktdemo
+package com.gftools
 
 import android.app.Activity
 import android.content.Intent
@@ -46,6 +46,7 @@ open class BaseActivity : Activity() {
         dataOutputStream.flush()
         dataOutputStream.close()
         outputStream.close()
+
     }
 
     protected fun openActivity(cls : Class<*>){
