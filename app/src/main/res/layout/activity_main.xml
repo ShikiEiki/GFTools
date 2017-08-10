@@ -3,46 +3,49 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="200px"
+            android:text="GFTools ver0.1\n开始运行程序"
+            android:textSize="50px"
+            android:onClick="onBtn1Click"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@android:color/black"
+            android:layout_margin="20px"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="调试按钮区"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
             <Button
-                android:layout_width="400px"
-                android:layout_height="200px"
-                android:text="Btn1"
-                android:textSize="70px"
-                android:onClick="onBtn1Click"
-                />
-            <Button
-                android:layout_width="400px"
+                android:layout_width="300px"
                 android:layout_height="200px"
                 android:text="Btn2"
-                android:textSize="70px"
+                android:textSize="50px"
                 android:onClick="onBtn2Click"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
             <Button
-                android:layout_width="400px"
+                android:layout_width="300px"
                 android:layout_height="200px"
                 android:text="Btn3"
-                android:textSize="70px"
+                android:textSize="50px"
                 android:onClick="onBtn3Click"
                 />
             <Button
-                android:layout_width="400px"
+                android:layout_width="300px"
                 android:layout_height="200px"
                 android:text="Btn4"
-                android:textSize="70px"
+                android:textSize="50px"
                 android:onClick="onBtn4Click"
                 />
         </LinearLayout>
