@@ -328,8 +328,6 @@ class BitmapCompare(bitmap : Bitmap){
 
     fun isViewAtLocation1() : Boolean{
         if (isPiexlEqual(1139 , 442 , 148 , 198 , 247)
-                && isPiexlEqual(1147 , 476 , 148 , 198 , 247)
-                && isPiexlEqual(1296 , 486 , 156 , 202 , 255)
                 && isPiexlEqual(1154 , 592 , 156 , 202 , 255)
                 && isPiexlEqual(1292 , 583 , 148 , 194 , 247)
                 ){
@@ -341,46 +339,134 @@ class BitmapCompare(bitmap : Bitmap){
             return false
         }
     }
-    fun isViewAtLocation2() : Boolean{
-        if (isPiexlEqual(581 , 380 , 255 , 255 , 255)
-                && isPiexlEqual(544 , 585 , 255 , 255 , 255)
-                && isPiexlEqual(763 , 633 , 255 , 255 , 255)
-                && isPiexlEqual(962 , 381 , 255 , 255 , 255)
-                && isPiexlEqual(537 , 977 , 255 , 255 , 255)
+
+
+    /**
+     * 判断是否在视角2,会自动添加-30至30像素的修正偏移量自动重试,如果加上偏移量也判断不是视角2,则返回-999,
+     * 如果加上偏移量判断是视角2,则返回偏移量
+     */
+    fun isViewAtLocation2(originCorrection : Int) : Int{
+        if (isPiexlEqual(581 , 380+originCorrection , 255 , 255 , 255)
+                && isPiexlEqual(544, 585+originCorrection , 255 , 255 , 255)
+                && isPiexlEqual(763, 633+originCorrection , 255 , 255 , 255)
+                && isPiexlEqual(962, 381+originCorrection , 255 , 255 , 255)
+                && isPiexlEqual(537, 977+originCorrection , 255 , 255 , 255)
                 ){
-            lv("视角在位置2")
-            return true
+            lv("视角在位置2,需要添加竖直修正量为 $originCorrection")
+            return originCorrection
         }
-        else {
-            lv("视角不在不在不在位置2")
-            return false
+        for (i : Int in -30 .. 30){
+            if (isPiexlEqual(581 , 380+i , 255 , 255 , 255)
+                    && isPiexlEqual(544 , 585+i , 255 , 255 , 255)
+                    && isPiexlEqual(763 , 633+i , 255 , 255 , 255)
+                    && isPiexlEqual(962 , 381+i , 255 , 255 , 255)
+                    && isPiexlEqual(537 , 977+i , 255 , 255 , 255)
+                    ){
+                lv("视角在位置2,需要添加竖直修正量为 $i")
+                return i
+            }
         }
+        lv("视角不在不在不在位置2")
+        return -999
     }
 
-
-    fun isCharactorSetupChooseUI() : Int{
+    fun isTeamChooseUI() : Boolean{
         if (isPiexlEqual(275 , 152 , 255 , 255 , 255)
                 && isPiexlEqual(362 , 158 , 255 , 255 , 255)
                 && isPiexlEqual(449 , 161 , 255 , 255 , 255)
                 && isPiexlEqual(513 , 185 , 255 , 255 , 255)
                 && isPiexlEqual(589 , 161 , 255 , 255 , 255)
                 ){
-            if (isPiexlEqual(66 , 648 , 247 , 174 , 0)
-                    && isPiexlEqual(165 , 688 , 247 , 174 , 0)
-                    && isPiexlEqual(86 , 730 , 247 , 174 , 0)
-                    ){
-                lv("是角色部署选择界面,并且第4梯队已选中")
-                return 2
-            }
-            else{
-                lv("是角色部署选择界面,并且第4梯队未选中")
-                return 1
-            }
+            lv("是部署队伍选择界面")
+            return true
         }
         else {
-            lv("不是不是不是不是角色部署选择界面")
-            return 0
+            lv("不是不是不是不是部署队伍选择界面")
+            return false
         }
+    }
+
+    fun isCorrectTeamSelected(teamNo : Int) : String{
+        when (teamNo){
+            0 -> {
+                for (i:Int in 0 .. 4){
+                    if (isPiexlEqual(125 , 225+(148*i) , 49 , 57 , 49)
+                            && isPiexlEqual(132 , 242+(148*i) , 49 , 53 , 49)
+                            && isPiexlEqual(132 , 267+(148*i) , 49 , 49 , 49)
+                            ){
+                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
+                            return "$i/1"
+                        }
+                        else {
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
+                            return "$i/0"
+                        }
+                    }
+                }
+                lv("在当前界面没有发现梯队${(teamNo+1)}")
+                return "-1/0"
+            }
+            1 -> {
+                for (i in 0 .. 4){
+                    if (isPiexlEqual(123 , 377+(148*(i-1)) , 49 , 57 , 49)
+                            && isPiexlEqual(136 , 398+(148*(i-1)) , 49 , 53 , 49)
+                            && isPiexlEqual(142 , 420+(148*(i-1)) , 49 , 53 , 49)
+                            ){
+                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
+                            return "$i/1"
+                        }
+                        else {
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
+                            return "$i/0"
+                        }
+                    }
+                }
+                lv("在当前界面没有发现梯队${(teamNo+1)}")
+                return "0/0"
+            }
+
+            2 -> {
+                for (i in 0 .. 4){
+                    if (isPiexlEqual(122 , 523+(148*(i-2)) , 49 , 49 , 49)
+                            && isPiexlEqual(132 , 538+(148*(i-2)) , 49 , 53 , 49)
+                            && isPiexlEqual(123 , 552+(148*(i-2)) , 49 , 49 , 49)
+                            ){
+                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
+                            return "$i/1"
+                        }
+                        else {
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
+                            return "$i/0"
+                        }
+                    }
+                }
+                lv("在当前界面没有发现梯队${(teamNo+1)}")
+                return "0/0"
+            }
+            3 -> {
+                for (i in 0 .. 4){
+                    if (isPiexlEqual(141 , 657+(148*(i-3)) , 49 , 57 , 49)
+                            && isPiexlEqual(121 , 700+(148*(i-3)) , 49 , 49 , 49)
+                            && isPiexlEqual(142 , 711+(148*(i-3)) , 49 , 49 , 49)
+                            ){
+                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
+                            return "$i/1"
+                        }
+                        else {
+                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
+                            return "$i/0"
+                        }
+                    }
+                }
+                lv("在当前界面没有发现梯队${(teamNo+1)}")
+                return "0/0"
+            }
+        }
+        return ""
     }
 
     fun isCharactorAtLocation1() : Int{
@@ -466,39 +552,72 @@ class BitmapCompare(bitmap : Bitmap){
             return false
         }
     }
-    fun isCharactorAtLocation4_View2() : Int{
-        if (isPiexlEqual(117 , 237 , 115 , 158 , 230)
-//                    && isPiexlEqual(290 , 220 , 173 , 239 , 255)
-//                    && isPiexlEqual(332 , 228 , 255 , 206 , 0)
+    fun isCharactorAtLocation4_View2(correction : Int) : Int{
+        if (isPiexlEqual(152 , 270+correction , 255 , 255 , 255)
+                    && isPiexlEqual(235 , 272+correction , 255 , 255 , 255)
+                    && isPiexlEqual(261 , 259+correction , 255 , 255 , 255)
                 ){
-            if (isPiexlEqual(64 , 169 , 255 , 186 , 0)
-//                        && isPiexlEqual(177 , 288 , 255 , 186 , 0)
-                    || isPiexlEqual(62 , 401 , 255 , 186 , 0)
-                    ){
-                //由于此处滑动判定不准,采用两个条件有一个满足即判定为已选中
-                lv("角色在视角2下的位置4,并且已选中")
-                return 2
-            }
-            else{
-                lv("角色在视角2下的位置4,但是未选中")
-                return 1
-            }
+            lv("角色在视角2下的位置4,需要竖直修正量$correction")
+            return correction
         }
         else {
+            for (i : Int in -30..30){
+                if (isPiexlEqual(152 , 270+i , 255 , 255 , 255)
+                        && isPiexlEqual(235 , 272+i, 255 , 255 , 255)
+                        && isPiexlEqual(261 , 259+i, 255 , 255 , 255)
+                        ){
+                    lv("角色在视角2下的位置4,需要竖直修正量$i")
+                    return i
+                }
+            }
             lv("角色不在不在不在不在视角2下的位置4")
-            return 0
+            return -999
         }
     }
 
-    fun isCharactorAtLocation5() : Boolean{
-        if (isPiexlEqual(92 , 561 , 107 , 158 , 230)
+    fun isCharactorAtLocation4_View2_selected(correction : Int) : Int{
+        if (isPiexlEqual(63 , 200+correction , 255 , 186 , 0)
+                && isPiexlEqual(176 , 323+correction , 255 , 186, 0)
+                && isPiexlEqual(63 , 431+correction , 255 , 186 , 0)
                 ){
-            lv("角色在位置5")
-            return true
+            lv("角色在视角2下的位置4并且被选中,需要竖直修正量$correction")
+            return correction
         }
         else {
+            for (i : Int in -30..30){
+                if (isPiexlEqual(63 , 200+i , 255 , 186 , 0)
+                        && isPiexlEqual(176 , 323+i, 255 , 186, 0)
+                        && isPiexlEqual(63 , 431+i, 255 , 186 , 0)
+                        ){
+                    lv("角色在视角2下的位置4并且被选中,需要竖直修正量$i")
+                    return i
+                }
+            }
+            lv("角色在视角2下的位置4,并没有被选中")
+            return -999
+        }
+    }
+
+    fun isCharactorAtLocation5(correction: Int) : Int{
+        if (isPiexlEqual(128 , 594+correction , 255 , 255 , 255)
+            && isPiexlEqual(186 , 592+correction , 255 , 255 , 255)
+            && isPiexlEqual(328 , 604+correction , 255 , 255 , 255)
+                ){
+            lv("角色在位置5,需要竖直修正量$correction")
+            return correction
+        }
+        else {
+            for (i : Int in -30..30){
+                if (isPiexlEqual(128 , 594+i , 255 , 255 , 255)
+                        && isPiexlEqual(186 , 592+i, 255 , 255 , 255)
+                        && isPiexlEqual(328 , 604+i, 255 , 255 , 255)
+                        ){
+                    lv("角色在位置5,需要竖直修正量$i")
+                    return i
+                }
+            }
             lv("角色不在不在不在不在位置5")
-            return false
+            return -999
         }
     }
 

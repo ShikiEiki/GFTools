@@ -54,8 +54,12 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
     }
 
-    fun onBtn1Click(view: View?){
+    fun startProgram(view: View?){
         sendCaptureIntent(10086)
+    }
+
+    fun config(view: View){
+        openActivity(ConfigActivity::class.java)
     }
 
     fun onBtn2Click(view: View){
@@ -80,13 +84,19 @@ class MainActivity : BaseActivity() {
         launchGF()
         waitSecond(5)
         var bitmapCompare = BitmapCompare(startCapture())
-        bitmapCompare.isGunTobeDisassembleChooseUI()
+        var temp = bitmapCompare.isViewAtLocation2(0)
+        if (temp != -999){
+            temp = bitmapCompare.isCharactorAtLocation4_View2(temp)
+            if (temp != -999){
+                temp = bitmapCompare.isCharactorAtLocation4_View2_selected(temp)
+            }
+        }
     }
 
     fun sendCaptureIntent(requestCode: Int) {
         lv("sendCaptureIntent")
         mMediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent()  , 10086)
+        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent()  , requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -11,8 +11,14 @@
             android:layout_height="200px"
             android:text="GFTools ver0.1\n开始运行程序"
             android:textSize="50px"
-            android:onClick="onBtn1Click"
+            android:onClick="startProgram"
             />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="200px"
+            android:text="配置"
+            android:textSize="50px"
+            android:onClick="config"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"

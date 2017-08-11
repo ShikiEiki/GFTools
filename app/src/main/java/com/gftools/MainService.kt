@@ -21,6 +21,7 @@ class MainService : Service() {
     var toast : Toast? = null
     var ready = false
     val mThread = MyThread()
+    lateinit var tempBitmapCompare : BitmapCompare
 
     inner class MyThread : Thread(){
         var keepRun = true
@@ -42,9 +43,16 @@ class MainService : Service() {
                 //---------------进入维修界面,完毕后回到主界面----------------
                 handleMainUI(MainActivity.UI.REPAIRE)
                 //---------------进入战斗选择界面---------------------------
-                while (keepRun && handleMainUI(MainActivity.UI.CHOOSE_COMBAT).equals("full")){
-                    handleMainUI(MainActivity.UI.FACTORY)
-                    waitSecond(5)
+                while (keepRun) {
+                    var tempResult = handleMainUI(MainActivity.UI.CHOOSE_COMBAT)
+                    if (tempResult == -1) {
+                        handleMainUI(MainActivity.UI.FACTORY)
+                    } else if (tempResult == -2) {
+                        showToastAndLv("现在设置的梯队${GFTools.getMainForceIndex()}无法作战,可能是正在维修等等原因,等待300s")
+                        waitSecond(300)
+                    } else {
+                        break
+                    }
                 }
             }
         }
@@ -210,7 +218,11 @@ class MainService : Service() {
         return false
     }
 
-    fun handleChooseCombatUI() : Boolean{
+    /**
+     * 返回值为-1代表无法选择战斗,仓库已满,如果已满,会返回MainUI函数才会结束
+     * 返回值为1代表选择战斗成功,成功会保证界面停在战斗开始部署UI
+     */
+    fun handleChooseCombatUI() : Int{
         var noMoreSpace = false
         while (mThread.keepRun){
             showToastAndLv("判断当前界面")
@@ -258,12 +270,11 @@ class MainService : Service() {
             }
             else if (bitMapCompare.isMainUI() && noMoreSpace){
                 bitMapCompare.recycle()
-                return false
+                return -1
             }
             else if (bitMapCompare.isPreCombatUI()){
-                handleArmyDeploy()
                 bitMapCompare.recycle()
-                return true
+                break
             }
             else {
                 if (!handleExpeditionFinishUI(bitMapCompare)){
@@ -273,15 +284,24 @@ class MainService : Service() {
             }
             bitMapCompare.recycle()
         }
-        return false
+        return 1
     }
 
-    fun handleArmyDeploy(){
+    /**
+     * 返回值为-1代表无法选择配置的梯队,可能是正在维修或者正在训练等等,返回时界面将停在部队大地图部署界面
+     * 返回1代表部署成功,返回时界面将停在战斗开始界面
+     */
+    fun handleArmyDeploy() : Int{
+        var errorCode : Int = 1
         while (mThread.keepRun){
             showToastAndLv("判断当前界面")
             var bitMapCompare = BitmapCompare(MainActivity.startCapture())
             if (bitMapCompare.isPreCombatUI()){
-                if (!bitMapCompare.isViewAtLocation1()){
+                if (errorCode < 0){
+                    bitMapCompare.recycle()
+                    return errorCode
+                }
+                else if (!bitMapCompare.isViewAtLocation1()){
                     showToastAndLv("当前视角不在位置1,调整视角")
                     saveDrag(1500 , 300 , 800 , 600 , 500)
                     waitSecond(2)
@@ -304,33 +324,45 @@ class MainService : Service() {
                 }
             }
             else if (bitMapCompare.isBattleUI()){
-                handleBattleUI()
                 bitMapCompare.recycle()
-                return
+                break
+            }
+            else if (bitMapCompare.isTeamChooseUI()){
+                var mainforceIndex = GFTools.getMainForceIndex()
+                var results = bitMapCompare.isCorrectTeamSelected(mainforceIndex).split("/")
+                if (errorCode < 0){
+                    showToastAndLv("梯队选择发现已经存在的错误${errorCode},点击取消")
+                    tap(1749 , 962)
+                    waitSecond(2)
+                }
+                else if (results[0].equals("-1")){
+                    showToastAndLv("发现第${(mainforceIndex+1)}梯队不可选择,可能是正在维修或训练等等,梯队部署失败,点击取消")
+                    tap(1749 , 962)
+                    errorCode = -1
+                    waitSecond(2)
+                }
+                else if (results[1].equals("0")){
+                    showToastAndLv("在第${(results[0].toInt()+1)}行发现梯队${(mainforceIndex+1)},但是还未选中,点击选中该梯队")
+                    tap(81 , 255 + 148*results[0].toInt())
+                    waitSecond(2)
+                }
+                else {
+                    showToastAndLv("在第${(results[0].toInt()+1)}行发现梯队${(mainforceIndex+1)},并且已经选中,点击部署按钮")
+                    tap(1763 , 962)
+                    waitSecond(2)
+                }
             }
             else {
-                when (bitMapCompare.isCharactorSetupChooseUI()){
-                    1 -> {
-                        showToastAndLv("选择梯队界面,第4梯队未被选中,点击第4梯队")
-                        saveTap(88 , 694)
-                        waitSecond(2)
-                    }
-                    2 -> {
-                        showToastAndLv("选择梯队界面,第4梯队已经选中,点击部署")
-                        saveTap(1763 , 962)
-                        waitSecond(3)
-                    }
-                    else -> {
-                        showToastAndLv("未知界面,wait 5s")
-                        waitSecond(5)
-                    }
-                }
+                showToastAndLv("未知界面,wait 5s")
+                waitSecond(5)
             }
             bitMapCompare.recycle()
         }
+        return errorCode
     }
 
     fun handleBattleUI(){
+        var verticalCorrection = 0
         var stage = 1
         while (mThread.keepRun){
             showToastAndLv("判断当前界面")
@@ -397,7 +429,7 @@ class MainService : Service() {
                             2 -> {
                                 showToastAndLv("2号点上的部队已经被选中,点击3号点以便行进至3号点")
                                 saveTap(33 , 511)
-                                waitSecond(5)
+                                waitSecond(20)
                             }
                         }
                     }
@@ -426,7 +458,8 @@ class MainService : Service() {
                     }
                 }
                 if (stage == 4){
-                    if (bitMapCompare.isViewAtLocation2()){
+                    var tempResult = bitMapCompare.isViewAtLocation2(verticalCorrection)
+                    if (tempResult == -999){
                         showToastAndLv("stage == 4时,视角不在view2,调整视角")
                         saveDrag(1000 , 300 , 400 , 800 , 1000)
                         waitSecond(2)
@@ -434,32 +467,37 @@ class MainService : Service() {
                         waitSecond(2)
                         saveDrag(1200 , 900 , 1100 , 300 , 2000)
                         waitSecond(4)
+                        verticalCorrection = 0
                     }
                     else {
-                        when (bitMapCompare.isCharactorAtLocation4_View2()){
-                            0 -> {
-                                if (bitMapCompare.isCharactorAtLocation5()){
-                                    stage = 5
-                                    waitSecond(1)
-                                }
-                                else {
-                                    showToastAndLv("stage == 4时,判断部队不在4号点也不在5号点,可能是视角调整有误差,重新调整视角")
-                                    saveDrag(1000 , 300 , 400 , 800 , 1000)
-                                    waitSecond(2)
-                                    saveDrag(1000 , 300 , 400 , 800 , 1000)
-                                    waitSecond(2)
-                                    saveDrag(1200 , 900 , 1200 , 300 , 2000)
-                                    waitSecond(4)
-                                }
+                        verticalCorrection = tempResult
+                        tempResult = bitMapCompare.isCharactorAtLocation4_View2(verticalCorrection)
+                        if (tempResult == -999){
+                            if (bitMapCompare.isCharactorAtLocation5(verticalCorrection) == -999){
+                                showToastAndLv("stage == 4时,判断部队不在4号点也不在5号点,可能是视角调整有误差,重新调整视角")
+                                saveDrag(1000 , 300 , 400 , 800 , 1000)
+                                waitSecond(2)
+                                saveDrag(1000 , 300 , 400 , 800 , 1000)
+                                waitSecond(2)
+                                saveDrag(1200 , 900 , 1200 , 300 , 2000)
+                                waitSecond(4)
+                                verticalCorrection = 0
                             }
-                            1 -> {
+                            else {
+                                stage = 5
+                                waitSecond(1)
+                            }
+                        }
+                        else {
+                            verticalCorrection = tempResult
+                            if (bitMapCompare.isCharactorAtLocation4_View2_selected(verticalCorrection) == -999){
                                 showToastAndLv("4号点上的部队未选中,点击4号点以便选中")
-                                saveTap(57 , 347)
+                                saveTap(57 , 347 + verticalCorrection)
                                 waitSecond(3)
                             }
-                            2 -> {
+                            else {
                                 showToastAndLv("4号点上的部队已经被选中,点击5号点以便行进至5号点")
-                                saveTap(44 , 698)
+                                saveTap(44 , 698 + verticalCorrection)
                                 waitSecond(20)
                             }
                         }
@@ -492,7 +530,7 @@ class MainService : Service() {
             var bitMapCompare = BitmapCompare(MainActivity.startCapture())
             if (bitMapCompare.isLoginUI()){
                 showToastAndLv("已经进入登录画面,点击进入游戏")
-                saveTap(500 , 680 , 200, 200)
+                saveTap(500 , 680)
                 hasClick = true
                 waitSecond(5)
             }
@@ -678,26 +716,34 @@ class MainService : Service() {
 
     fun handleGunDisassemble(oldBitMapCompare: BitmapCompare?) {
         var bitMapCompare : BitmapCompare?= oldBitMapCompare
+        var complete = false
         while (mThread.keepRun) {
             showToastAndLv("判断当前界面")
             if (bitMapCompare == null){
                 bitMapCompare = BitmapCompare(MainActivity.startCapture())
             }
             var isFactoryUI = bitMapCompare.isFactoryUI()
-            if (isFactoryUI == 1){
-                showToastAndLv("已经进入了工厂界面,但是回收拆解按钮未选中,点击回收拆解按钮")
-                saveTap(126 , 665)
-                waitSecond(2)
-            }
-            else if (isFactoryUI == 21){
-                showToastAndLv("选中了拆除按钮,但是没有选择拆除枪娘,点击加号")
-                saveTap(437 , 295)
-                waitSecond(2)
-            }
-            else if (isFactoryUI == 22){
-                showToastAndLv("选中了拆除按钮,也选择了拆除枪娘,点击拆解")
-                saveTap(1751, 930)
-                waitSecond(3)
+            if (isFactoryUI != 0){
+                if (complete){
+                    showToast("拆解完成,点击返回")
+                    saveTap(99 , 79)
+                    waitSecond(10)
+                }
+                else if (isFactoryUI == 1){
+                    showToastAndLv("已经进入了工厂界面,但是回收拆解按钮未选中,点击回收拆解按钮")
+                    saveTap(126 , 665)
+                    waitSecond(2)
+                }
+                else if (isFactoryUI == 21){
+                    showToastAndLv("选中了拆除按钮,但是没有选择拆除枪娘,点击加号")
+                    saveTap(437 , 295)
+                    waitSecond(2)
+                }
+                else if (isFactoryUI == 22){
+                    showToastAndLv("选中了拆除按钮,也选择了拆除枪娘,点击拆解")
+                    saveTap(1751, 930)
+                    waitSecond(3)
+                }
             }
             else if (bitMapCompare.isGunTobeDisassembleChooseUI()){
                 if (!handleGunDisassembleGunChoose(bitMapCompare)){
@@ -707,9 +753,22 @@ class MainService : Service() {
                 }
             }
             else if (bitMapCompare.isMainUI()){
+                bitMapCompare.recycle()
                 return
             }
-            bitMapCompare?.recycle()
+            else if (bitMapCompare.isDialog()){
+                showToastAndLv("检测到对话框,推测是没有可拆的对话框,点击确定")
+                complete = true
+                saveTap(962 , 778)
+                waitSecond(2)
+            }
+            else {
+                if (!handleExpeditionFinishUI(bitMapCompare)){
+                    showToast("未知界面")
+                    waitSecond(5)
+                }
+            }
+            bitMapCompare.recycle()
             bitMapCompare = null
         }
     }
@@ -779,85 +838,113 @@ class MainService : Service() {
                 showToastAndLv("未知界面")
                 waitSecond(5)
             }
-            bitMapCompare?.recycle()
+            bitMapCompare.recycle()
             bitMapCompare = null
         }
         return false
     }
 
-    fun handleMainUI(goto : MainActivity.UI) : String{
+    /**
+     * goto == REPAIRE时:
+     * 返回1代表成功,返回时界面将停在MainUI
+     *
+     * goto == FACTORY时:
+     * 返回1代表成功,返回时界面将停在MainUI
+     *
+     * goto == CHOOSE_COMBAT时:
+     * 返回1代表成功,返回是界面将停在MainUi
+     * 返回-1代表仓库已满,无法选择战斗,返回时界面将停在MainUI
+     * 返回-2代表设定的梯队无法选择,可能是正在训练或者维修,返回时界面将停在MainUI
+     *
+     *
+     */
+    fun handleMainUI(goto : MainActivity.UI) : Int{
+        var errorCode : Int = 1
         while (mThread.keepRun){
             showToastAndLv("判断当前界面")
             var bitMapCompare = BitmapCompare(MainActivity.startCapture())
-            if (bitMapCompare.isMainUI()){
-                when (goto){
-                    MainActivity.UI.REPAIRE -> {
-                        if (bitMapCompare.isRedDotInRepairBtnInMainUI()){
-                            showToastAndLv("主界面发现维修按钮上有红点,需要维修,点击维修")
-                            saveTap(1373 , 368)
-                            waitSecond(5)
-                            handleRepairUI()
+            if (goto == MainActivity.UI.CHOOSE_COMBAT){
+                if (bitMapCompare.isMainUI()){
+                    if (errorCode < 0){
+                        bitMapCompare.recycle()
+                        break
+                    }
+                    else {
+                        showToast("点击进入战斗选择")
+                        tap(1397 , 750)
+                        waitSecond(4)
+                    }
+                }
+                else if(bitMapCompare.isCombatChooseUI()){
+                    if (errorCode < 0){
+                        showToast("发现已经出现的错误${errorCode} , 点击返回基地")
+                        tap(102 , 81)
+                        waitSecond(10)
+                    }
+                    else if (handleChooseCombatUI() == 1){
+                        if (handleArmyDeploy() == 1){
+                            handleBattleUI()
+                            bitMapCompare.recycle()
+                            break
                         }
                         else {
-                            showToastAndLv("主界面没有发现维修按钮上有红点,不需要维修")
+                            showToastAndLv("部署梯队失败,点击返回任务选择")
+                            saveTap(113 , 68)
+                            waitSecond(3)
                         }
+                    }
+                    else {
+                        errorCode = -1
                         bitMapCompare.recycle()
-                        return "repair_finish"
+                        break
                     }
-                    MainActivity.UI.FACTORY -> {
-                        showToastAndLv("点击进入工厂")
-                        saveTap(1734 , 521)
-                        waitSecond(5)
-                    }
-                    MainActivity.UI.CHOOSE_COMBAT -> {
-                        showToastAndLv("点击进入战斗选择")
-                        saveTap(1397 , 750)
+                }
+                else {
+                    if (!handleExpeditionFinishUI(bitMapCompare)){
+                        showToastAndLv("未知界面")
                         waitSecond(5)
                     }
                 }
             }
-            else if (bitMapCompare.isCombatChooseUI()){
-                when (goto){
-                    MainActivity.UI.CHOOSE_COMBAT -> {
-                        if (handleChooseCombatUI()){
-                            bitMapCompare.recycle()
-                            return ""
-                        }
-                        else {
-                            bitMapCompare.recycle()
-                            return "full"
-                        }
-                    }
-                    else -> {
-                        showToastAndLv("发现进入了战斗选择画面,但是意图并不是进入这里,返回主界面,点击返回")
-                        saveTap(106 , 72)
+            else if (goto == MainActivity.UI.FACTORY){
+                if (bitMapCompare.isFactoryUI() != 0){
+                    handleGunDisassemble(bitMapCompare)
+                    bitMapCompare.recycle()
+                    break
+                }
+                else if (bitMapCompare.isMainUI()){
+                    showToastAndLv("点击进入工厂")
+                    saveTap(1734 , 521)
+                    waitSecond(3)
+                }
+                else {
+                    if (!handleExpeditionFinishUI(bitMapCompare)){
+                        showToastAndLv("未知界面")
                         waitSecond(5)
                     }
                 }
             }
-            else if (bitMapCompare.isFactoryUI() != 0){
-                when (goto){
-                    MainActivity.UI.FACTORY -> {
-                        handleGunDisassemble(bitMapCompare)
-                        bitMapCompare.recycle()
-                        return ""
+            else if (goto == MainActivity.UI.REPAIRE){
+                if (bitMapCompare.isMainUI()){
+                    if (bitMapCompare.isRedDotInRepairBtnInMainUI()){
+                        handleRepairUI()
                     }
-                    else -> {
-                        showToastAndLv("发现进入了工厂画面,但是意图并不是进入这里,返回主界面,点击返回")
-                        saveTap(106 , 72)
+                    else {
+                        showToastAndLv("主界面没有发现维修按钮上有红点,不需要维修")
+                    }
+                    bitMapCompare.recycle()
+                    break
+                }
+                else {
+                    if (!handleExpeditionFinishUI(bitMapCompare)){
+                        showToastAndLv("未知界面")
                         waitSecond(5)
                     }
-                }
-            }
-            else {
-                if (!handleExpeditionFinishUI(bitMapCompare)){
-                    showToastAndLv("未知界面")
-                    waitSecond(5)
                 }
             }
             bitMapCompare.recycle()
         }
-        return ""
+        return errorCode
     }
 
 
@@ -920,20 +1007,13 @@ class MainService : Service() {
 
 
     fun showToast(msg : String){
-        mHandler.post(object : Runnable{
-            override fun run() {
-                toast?.cancel()
-
-                toast = Toast.makeText(applicationContext , msg , Toast.LENGTH_SHORT)
-//                if (toast == null){
-//                    toast = Toast.makeText(applicationContext , msg , Toast.LENGTH_SHORT)
-//                }
-//                else {
-//                    toast?.setText(msg)
-//                }
-                toast?.show()
-            }
-        })
+//        mHandler.post(object : Runnable{
+//            override fun run() {
+//                toast?.cancel()
+//                toast = Toast.makeText(applicationContext , msg , Toast.LENGTH_SHORT)
+//                toast?.show()
+//            }
+//        })
     }
 
     protected fun execShellCmd(cmd : String){
