@@ -35,16 +35,57 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="主力梯队:    "
+                    android:text="作战地图:    "
                     />
                 <Spinner
-                    android:id="@+id/spinner1"
+                    android:id="@+id/battle_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 </Spinner>
             </LinearLayout>
             <View android:layout_width="match_parent" android:layout_height="1px" android:background="@android:color/black"/>
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="50px"
+                android:paddingBottom="50px"
+                android:paddingLeft="30px"
+                android:paddingRight="30px"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="主力梯队:    "
+                    />
+                <Spinner
+                    android:id="@+id/main_force_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1px" android:background="@android:color/black"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="50px"
+                android:paddingBottom="50px"
+                android:paddingLeft="30px"
+                android:paddingRight="30px"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="炮灰梯队:    "
+                    />
+                <Spinner
+                    android:id="@+id/cannon_fodder_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1px" android:background="@android:color/black"/>
         </LinearLayout>
     </ScrollView>
 </layout>

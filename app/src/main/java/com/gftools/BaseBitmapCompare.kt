@@ -7,7 +7,7 @@ import com.gftools.utils.*
  * Created by FH on 2017/8/10.
  */
 
-class BitmapCompare(bitmap : Bitmap){
+open class BaseBitmapCompare(bitmap : Bitmap){
     var mBitMap : Bitmap
     init {
         mBitMap = bitmap
@@ -24,6 +24,20 @@ class BitmapCompare(bitmap : Bitmap){
             return true
         }
         lv("对比像素坐标[$x , $y]与期望不同,返回false")
+        return false
+    }
+
+    fun isPiexlEqual_allowError(x : Int , y : Int , r : Int , g : Int, b : Int , allowMaxError : Int) : Boolean{
+        var (pr , pg , pb) = getPixelRGB(x , y)
+        lv("对比像素颜色:点坐标[$x , $y] 图中颜色 ($pr , $pg , $pb) 期望颜色 ($r , $g , $b)")
+        if ((pr in (r-allowMaxError)..(r+allowMaxError))
+                && (pg in (g-allowMaxError)..(g+allowMaxError))
+                && (pb in (b-allowMaxError)..(b+allowMaxError))
+                ){
+            lv("对比像素坐标[$x , $y]与期望在允许最大误差 $allowMaxError 的情况下一致,返回true")
+            return true
+        }
+        lv("对比像素坐标[$x , $y]与期望在允许最大误差 $allowMaxError 的情况下仍然不同,返回false")
         return false
     }
 
@@ -228,23 +242,7 @@ class BitmapCompare(bitmap : Bitmap){
         }
     }
 
-    fun isCorrectZHANYIChoosed() : Boolean{
-        if (isPiexlEqual(344 , 479 , 255 , 178 , 0)
-                && isPiexlEqual(515 , 392 , 255 , 178 , 0)
-                && isPiexlEqual(890 , 239 , 255 , 255 , 255)
-                && isPiexlEqual(1063 , 245 , 255 , 255 , 255)
-                && isPiexlEqual(1013 , 606 , 255 , 255 , 255)
-                && isPiexlEqual(1100 , 617 , 140 , 138 , 140)
-                && isPiexlEqual(1199 , 625 , 255 , 255 , 255)
-                ){
-            lv("已经切换到了正确的战役")
-            return true
-        }
-        else {
-            lv("还未还未还未还未切换到正确的战役")
-            return false
-        }
-    }
+
     fun isCombatConfirmDialog() : Boolean{
         if (isPiexlEqual(813 , 837 , 99 , 125 , 41)
                 && isPiexlEqual(817 , 899 , 99 , 125 , 41)
@@ -306,69 +304,7 @@ class BitmapCompare(bitmap : Bitmap){
             return false
         }
     }
-    fun isPreCombatUI() : Boolean{
-        if (isPiexlEqual(103 , 58 , 255 , 255 , 255)
-                && isPiexlEqual(169 , 65 , 255 , 255 , 255)
-                && isPiexlEqual(142 , 116 , 255 , 255 , 255)
-                && isPiexlEqual(305 , 46 , 255 , 255 , 255)
-                && isPiexlEqual(345 , 69 , 255 , 255 , 255)
-                && isPiexlEqual(1593 , 597 , 99 , 113 , 49)
-                && isPiexlEqual(1693 , 596 , 58 , 85 , 74)
-                && isPiexlEqual(411 , 16 , 8 , 8 , 8)
-                && isPiexlEqual(388 , 39 , 8 , 8 , 8)
-                ){
-            lv("是开始作战前的部署画面")
-            return true
-        }
-        else {
-            lv("不是不是不是不是开始作战前的部署画面")
-            return false
-        }
-    }
 
-    fun isViewAtLocation1() : Boolean{
-        if (isPiexlEqual(1139 , 442 , 148 , 198 , 247)
-                && isPiexlEqual(1154 , 592 , 156 , 202 , 255)
-                && isPiexlEqual(1292 , 583 , 148 , 194 , 247)
-                ){
-            lv("视角在位置1")
-            return true
-        }
-        else {
-            lv("视角不在不在不在位置1")
-            return false
-        }
-    }
-
-
-    /**
-     * 判断是否在视角2,会自动添加-30至30像素的修正偏移量自动重试,如果加上偏移量也判断不是视角2,则返回-999,
-     * 如果加上偏移量判断是视角2,则返回偏移量
-     */
-    fun isViewAtLocation2(originCorrection : Int) : Int{
-        if (isPiexlEqual(581 , 380+originCorrection , 255 , 255 , 255)
-                && isPiexlEqual(544, 585+originCorrection , 255 , 255 , 255)
-                && isPiexlEqual(763, 633+originCorrection , 255 , 255 , 255)
-                && isPiexlEqual(962, 381+originCorrection , 255 , 255 , 255)
-                && isPiexlEqual(537, 977+originCorrection , 255 , 255 , 255)
-                ){
-            lv("视角在位置2,需要添加竖直修正量为 $originCorrection")
-            return originCorrection
-        }
-        for (i : Int in -30 .. 30){
-            if (isPiexlEqual(581 , 380+i , 255 , 255 , 255)
-                    && isPiexlEqual(544 , 585+i , 255 , 255 , 255)
-                    && isPiexlEqual(763 , 633+i , 255 , 255 , 255)
-                    && isPiexlEqual(962 , 381+i , 255 , 255 , 255)
-                    && isPiexlEqual(537 , 977+i , 255 , 255 , 255)
-                    ){
-                lv("视角在位置2,需要添加竖直修正量为 $i")
-                return i
-            }
-        }
-        lv("视角不在不在不在位置2")
-        return -999
-    }
 
     fun isTeamChooseUI() : Boolean{
         if (isPiexlEqual(275 , 152 , 255 , 255 , 255)
@@ -389,18 +325,18 @@ class BitmapCompare(bitmap : Bitmap){
     fun isCorrectTeamSelected(teamNo : Int) : String{
         when (teamNo){
             0 -> {
-                for (i:Int in 0 .. 4){
-                    if (isPiexlEqual(125 , 225+(148*i) , 49 , 57 , 49)
-                            && isPiexlEqual(132 , 242+(148*i) , 49 , 53 , 49)
-                            && isPiexlEqual(132 , 267+(148*i) , 49 , 49 , 49)
+                for (i:Int in 204 .. 881){
+                    if (isPiexlEqual_allowError(125 , i  , 49 , 57 , 49 , 10)
+                            && isPiexlEqual_allowError(132 , i+242-225 , 49 , 53 , 49 , 10)
+                            && isPiexlEqual_allowError(132 , i+267-225 , 49 , 49 , 49 , 10)
                             ){
-                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
-                            return "$i/1"
+                        if (isPiexlEqual_allowError(18 , i+251-225, 255 , 255 , 255 , 10)){
+                            lv("发现梯队${(teamNo+1)},但是还未选中,推断中心点是(97,${i-225+251})")
+                            return "$i/0/97/${i-225+251}"
                         }
-                        else {
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
-                            return "$i/0"
+                        else if (isPiexlEqual_allowError(18 , i+251-225, 255 , 182 , 0 , 10)){
+                            lv("发现梯队${(teamNo+1)},并且已经选中,推断中心点是(97,${i-225+251})")
+                            return "$i/1/97/${i-225+251}"
                         }
                     }
                 }
@@ -408,217 +344,65 @@ class BitmapCompare(bitmap : Bitmap){
                 return "-1/0"
             }
             1 -> {
-                for (i in 0 .. 4){
-                    if (isPiexlEqual(123 , 377+(148*(i-1)) , 49 , 57 , 49)
-                            && isPiexlEqual(136 , 398+(148*(i-1)) , 49 , 53 , 49)
-                            && isPiexlEqual(142 , 420+(148*(i-1)) , 49 , 53 , 49)
+                for (i in 204 .. 881){
+                    if (isPiexlEqual_allowError(123 , i , 49 , 57 , 49 , 10)
+                            && isPiexlEqual_allowError(136 , i+398-377 , 49 , 53 , 49 , 10)
+                            && isPiexlEqual_allowError(142 , i+420-377, 49 , 53 , 49 , 10)
                             ){
-                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
-                            return "$i/1"
+                        if (isPiexlEqual_allowError(18 , i+407-377 , 255 , 255 , 255 , 10)){
+                            lv("发现梯队${(teamNo+1)},但是还未选中,推断中心点是(97,${i-377+409})")
+                            return "$i/0/97/${i-377+409}"
                         }
-                        else {
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
-                            return "$i/0"
+                        else if (isPiexlEqual_allowError(18 , i+407-377 , 255 , 182 , 0 , 10)){
+                            lv("发现梯队${(teamNo+1)},并且已经选中,推断中心点是(97,${i-377+409})")
+                            return "$i/1/97/${i-377+409}"
                         }
                     }
                 }
                 lv("在当前界面没有发现梯队${(teamNo+1)}")
-                return "0/0"
+                return "-1/0"
             }
-
             2 -> {
-                for (i in 0 .. 4){
-                    if (isPiexlEqual(122 , 523+(148*(i-2)) , 49 , 49 , 49)
-                            && isPiexlEqual(132 , 538+(148*(i-2)) , 49 , 53 , 49)
-                            && isPiexlEqual(123 , 552+(148*(i-2)) , 49 , 49 , 49)
+                for (i in 204 .. 881){
+                    if (isPiexlEqual_allowError(122 , i , 49 , 49 , 49 , 10)
+                            && isPiexlEqual_allowError(132 , i+538-523 , 49 , 53 , 49 , 10)
+                            && isPiexlEqual_allowError(123 , i+552-523 , 49 , 49 , 49 , 10)
                             ){
-                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
-                            return "$i/1"
+                        if (isPiexlEqual_allowError(18 , i+549-523 , 255 , 255 , 255 , 10)){
+                            lv("发现梯队${(teamNo+1)},但是还未选中,推断中心点是(97,${i-523+549})")
+                            return "$i/0/97/${i-523+549}"
                         }
-                        else {
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
-                            return "$i/0"
+                        else if (isPiexlEqual_allowError(18 , i+549-523 , 255 , 182 , 0 , 10)){
+                            lv("发现梯队${(teamNo+1)},并且已经选中,推断中心点是(97,${i-523+549})")
+                            return "$i/1/97/${i-523+549}"
                         }
                     }
                 }
                 lv("在当前界面没有发现梯队${(teamNo+1)}")
-                return "0/0"
+                return "-1/0"
             }
             3 -> {
-                for (i in 0 .. 4){
-                    if (isPiexlEqual(141 , 657+(148*(i-3)) , 49 , 57 , 49)
-                            && isPiexlEqual(121 , 700+(148*(i-3)) , 49 , 49 , 49)
-                            && isPiexlEqual(142 , 711+(148*(i-3)) , 49 , 49 , 49)
+                for (i in 204 .. 881){
+                    if (isPiexlEqual_allowError(141 , i , 49 , 57 , 49 , 10)
+                            && isPiexlEqual_allowError(121 , i+700-657 , 49 , 49 , 49 , 10)
+                            && isPiexlEqual_allowError(142 , i+711-657 , 49 , 49 , 49 , 10)
                             ){
-                        if (isPiexlEqual(18 , 251+(148*i) , 239 , 170 , 0)){
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},并且已经选中")
-                            return "$i/1"
+                        if (isPiexlEqual_allowError(18 , i+693-657 , 255 , 255 , 255 , 10)){
+                            lv("发现梯队${(teamNo+1)},但是还未选中,推断中心点是(97,${i+693-657})")
+                            return "$i/0/97/${i+693-657}"
                         }
-                        else {
-                            lv("在第${(i+1)}行发现梯队${(teamNo+1)},但是还未选中")
-                            return "$i/0"
+                        else if (isPiexlEqual_allowError(18 , i+693-657 , 255 , 182 , 0, 10)){
+                            lv("发现梯队${(teamNo+1)},并且已经选中,推断中心点是(97,${i+693-657})")
+                            lv("---------------------------" + "$i/1/97/${i+693-657}")
+                            return "$i/1/97/${i+693-657}"
                         }
                     }
                 }
                 lv("在当前界面没有发现梯队${(teamNo+1)}")
-                return "0/0"
+                return "-1/0"
             }
         }
         return ""
-    }
-
-    fun isCharactorAtLocation1() : Int{
-        if (isPiexlEqual(1311 , 410 , 255 , 255 , 255)
-                && isPiexlEqual(1385 , 419 , 255 , 255 , 255)
-                && isPiexlEqual(1420 , 399 , 255 , 255 , 255)
-                ){
-            if (isPiexlEqual(1219 , 349 , 255 , 186 , 0)
-                    && isPiexlEqual(1220 , 589 , 255 , 186 , 0)
-                    && isPiexlEqual(1343 , 469 , 255 , 186 , 0)
-                    && isPiexlEqual(1103 , 468 , 255 , 186 , 0)
-                    ){
-                lv("角色在位置1,并且已选中")
-                return 2
-            }
-            else{
-                lv("角色在位置1,但是未选中")
-                return 1
-            }
-        }
-        else {
-            lv("角色不在不在不在不在位置1")
-            return 0
-        }
-    }
-
-    fun isCharactorAtLocation2() : Int{
-        if (isPiexlEqual(702 , 323 , 255 , 255 , 255)
-                && isPiexlEqual(787 , 322 , 255 , 255 , 255)
-                && isPiexlEqual(813 , 304 , 255 , 255 , 255)
-                ){
-            if (isPiexlEqual(614 , 255 , 255 , 186 , 0)
-                    && isPiexlEqual(502 , 375 , 255 , 186 , 0)
-                    && isPiexlEqual(735 , 375 , 255 , 186 , 0)
-                    && isPiexlEqual(613 , 488 , 255 , 186 , 0)
-                    ){
-                lv("角色在位置2,并且已选中")
-                return 2
-            }
-            else{
-                lv("角色在位置2,但是未选中")
-                return 1
-            }
-        }
-        else {
-            lv("角色不在不在不在不在位置2")
-            return 0
-        }
-    }
-
-    fun isCharactorAtLocation3() : Int{
-        if (isPiexlEqual(117 , 392 , 255 , 255 , 255)
-                && isPiexlEqual(187 , 403 , 255 , 255 , 255)
-                && isPiexlEqual(241 , 413 , 255 , 255 , 255)
-                ){
-            if (isPiexlEqual(35 , 343 , 255 , 186 , 0)
-                    && isPiexlEqual(151 , 463 , 255 , 186 , 0)
-                    && isPiexlEqual(36 , 578 , 255 , 190 , 0)
-                    ){
-                lv("角色在位置3,并且已选中")
-                return 2
-            }
-            else{
-                lv("角色在位置3,但是未选中")
-                return 1
-            }
-        }
-        else {
-            lv("角色不在不在不在不在位置3")
-            return 0
-        }
-    }
-    fun isCharactorAtLocation4_View1() : Boolean{
-        if (isPiexlEqual(143 , 786 , 255 , 255 , 255)
-                && isPiexlEqual(225, 805, 255 , 255 , 255)
-                && isPiexlEqual(269, 811 , 255 , 255 , 255)
-                ){
-            lv("在View1的视角下角色在位置4")
-            return true
-        }
-        else {
-            lv("在View1的视角下角色不在不在不在不在位置4")
-            return false
-        }
-    }
-    fun isCharactorAtLocation4_View2(correction : Int) : Int{
-        if (isPiexlEqual(152 , 270+correction , 255 , 255 , 255)
-                    && isPiexlEqual(235 , 272+correction , 255 , 255 , 255)
-                    && isPiexlEqual(261 , 259+correction , 255 , 255 , 255)
-                ){
-            lv("角色在视角2下的位置4,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(152 , 270+i , 255 , 255 , 255)
-                        && isPiexlEqual(235 , 272+i, 255 , 255 , 255)
-                        && isPiexlEqual(261 , 259+i, 255 , 255 , 255)
-                        ){
-                    lv("角色在视角2下的位置4,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色不在不在不在不在视角2下的位置4")
-            return -999
-        }
-    }
-
-    fun isCharactorAtLocation4_View2_selected(correction : Int) : Int{
-        if (isPiexlEqual(63 , 200+correction , 255 , 186 , 0)
-                && isPiexlEqual(176 , 323+correction , 255 , 186, 0)
-                && isPiexlEqual(63 , 431+correction , 255 , 186 , 0)
-                ){
-            lv("角色在视角2下的位置4并且被选中,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(63 , 200+i , 255 , 186 , 0)
-                        && isPiexlEqual(176 , 323+i, 255 , 186, 0)
-                        && isPiexlEqual(63 , 431+i, 255 , 186 , 0)
-                        ){
-                    lv("角色在视角2下的位置4并且被选中,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色在视角2下的位置4,并没有被选中")
-            return -999
-        }
-    }
-
-    fun isCharactorAtLocation5(correction: Int) : Int{
-        if (isPiexlEqual(128 , 594+correction , 255 , 255 , 255)
-            && isPiexlEqual(186 , 592+correction , 255 , 255 , 255)
-            && isPiexlEqual(328 , 604+correction , 255 , 255 , 255)
-                ){
-            lv("角色在位置5,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(128 , 594+i , 255 , 255 , 255)
-                        && isPiexlEqual(186 , 592+i, 255 , 255 , 255)
-                        && isPiexlEqual(328 , 604+i, 255 , 255 , 255)
-                        ){
-                    lv("角色在位置5,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色不在不在不在不在位置5")
-            return -999
-        }
     }
 
     fun isRamdomEventDialog() : Boolean{
@@ -668,4 +452,35 @@ class BitmapCompare(bitmap : Bitmap){
             return false
         }
     }
+
+    fun isPreCombatUI() : Boolean{
+        if (isPiexlEqual(103 , 58 , 255 , 255 , 255)
+                && isPiexlEqual(169 , 65 , 255 , 255 , 255)
+                && isPiexlEqual(142 , 116 , 255 , 255 , 255)
+                && isPiexlEqual(305 , 46 , 255 , 255 , 255)
+                && isPiexlEqual(345 , 69 , 255 , 255 , 255)
+                && isPiexlEqual(705 , 85 , 255 , 255 , 255)
+                && isPiexlEqual(677 , 103 , 255 , 255 , 255)
+                && isPiexlEqual(691 , 57 , 255 , 255 , 255)
+                && isPiexlEqual(703 , 115 , 255 , 255 , 255)
+                ){
+            lv("是开始作战前的部署画面")
+            return true
+        }
+        else {
+            lv("不是不是不是不是开始作战前的部署画面")
+            return false
+        }
+    }
+
+    open fun isCorrectZHANYIChoosed() : Boolean{
+        return true
+    }
+    open fun isViewAtLocation1() : Boolean{
+        return true
+    }
+    open fun isCharactorAtLocation1() : Int{
+        return 1
+    }
+
 }

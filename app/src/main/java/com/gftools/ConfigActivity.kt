@@ -15,25 +15,59 @@ import com.gftools.databinding.ActivityConfigBinding
 
 class ConfigActivity : Activity(){
     lateinit var binding : ActivityConfigBinding
-    lateinit var adapter : ArrayAdapter<String>
+    lateinit var adapter1: ArrayAdapter<String>
+    lateinit var adapter2: ArrayAdapter<String>
+    lateinit var adapter3: ArrayAdapter<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.inflate(LayoutInflater.from(this) , R.layout.activity_config , null , false)
         setContentView(binding.root)
-        adapter = ArrayAdapter<String>(this , android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        adapter.add("第一梯队")
-        adapter.add("第二梯队")
-        adapter.add("第三梯队")
-        adapter.add("第四梯队")
-        binding.spinner1.adapter = adapter
-        binding.spinner1.setSelection(GFTools.getMainForceIndex())
-        binding.spinner1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        adapter1 = ArrayAdapter<String>(this , android.R.layout.simple_spinner_item)
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter1.add("第一梯队")
+        adapter1.add("第二梯队")
+        adapter1.add("第三梯队")
+        adapter1.add("第四梯队")
+        binding.mainForceSpinner.adapter = adapter1
+        binding.mainForceSpinner.setSelection(GFTools.getMainForceIndex())
+        binding.mainForceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GFTools.setMainForce(position)
+                GFTools.setMainForceIndex(position)
+            }
+        }
+
+        adapter2 = ArrayAdapter<String>(this , android.R.layout.simple_spinner_item)
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter2.add("5-2E(4战小兵)")
+        adapter2.add("5-4E(3战小兵+Boss)")
+        binding.battleSpinner.adapter = adapter2
+        binding.battleSpinner.setSelection(GFTools.getBattleIndex())
+        binding.battleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                GFTools.setBattleIndex(position)
+            }
+        }
+
+        adapter3 = ArrayAdapter<String>(this , android.R.layout.simple_spinner_item)
+        adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter3.add("第一梯队")
+        adapter3.add("第二梯队")
+        adapter3.add("第三梯队")
+        adapter3.add("第四梯队")
+        binding.cannonFodderSpinner.adapter = adapter3
+        binding.cannonFodderSpinner.setSelection(GFTools.getMainForceIndex())
+        binding.cannonFodderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                GFTools.setCannonFodderIndex(position)
             }
         }
     }

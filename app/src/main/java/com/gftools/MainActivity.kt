@@ -83,14 +83,8 @@ class MainActivity : BaseActivity() {
     fun test(){
         launchGF()
         waitSecond(5)
-        var bitmapCompare = BitmapCompare(startCapture())
-        var temp = bitmapCompare.isViewAtLocation2(0)
-        if (temp != -999){
-            temp = bitmapCompare.isCharactorAtLocation4_View2(temp)
-            if (temp != -999){
-                temp = bitmapCompare.isCharactorAtLocation4_View2_selected(temp)
-            }
-        }
+        var bitmapCompare = BaseBitmapCompare(startCapture())
+        bitmapCompare.isCorrectTeamSelected(3)
     }
 
     fun sendCaptureIntent(requestCode: Int) {
