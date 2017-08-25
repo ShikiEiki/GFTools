@@ -55,6 +55,20 @@ class BitmapCompare54e(bitmap : Bitmap) : BaseBitmapCompare(bitmap) {
         return false
     }
 
+    fun isViewAtLocation3() : Boolean{
+        if (isPiexlEqual(784 , 449, 206 , 105 , 16)
+                && isPiexlEqual(410 , 700 , 222 , 125 , 66)
+                && isPiexlEqual(451 , 997 , 255 , 255 , 255)
+                && isPiexlEqual(871 , 992 , 255 , 255 , 255)
+                && isPiexlEqual(1299 , 737 , 255 , 255 , 255)
+                ){
+            lv("视角在位置2")
+            return true
+        }
+        lv("视角不在不在不在位置2")
+        return false
+    }
+
     fun isCharactorAtHome() : Boolean{
         return isPiexlEqual(1364 , 483 , 255 , 255 , 255)
                 && isPiexlEqual(1453, 490 , 255 , 255 , 255)
@@ -86,14 +100,14 @@ class BitmapCompare54e(bitmap : Bitmap) : BaseBitmapCompare(bitmap) {
     }
 
     fun isCharactorAtLocation2() : Int{
-        if (isPiexlEqual(702 , 323 , 255 , 255 , 255)
-                && isPiexlEqual(787 , 322 , 255 , 255 , 255)
-                && isPiexlEqual(813 , 304 , 255 , 255 , 255)
+        if (isPiexlEqual(762 , 358 , 255 , 255 , 255)
+                && isPiexlEqual(974 , 383 , 255 , 255 , 255)
+                && isPiexlEqual(880 , 363 , 255 , 255 , 255)
                 ){
-            if (isPiexlEqual(614 , 255 , 255 , 186 , 0)
-                    && isPiexlEqual(502 , 375 , 255 , 186 , 0)
-                    && isPiexlEqual(735 , 375 , 255 , 186 , 0)
-                    && isPiexlEqual(613 , 488 , 255 , 186 , 0)
+            if (isPiexlEqual(681 , 300 , 255 , 186 , 0)
+                    && isPiexlEqual(563 , 428 , 255 , 186 , 0)
+                    && isPiexlEqual(681 , 542 , 255 , 186 , 0)
+                    && isPiexlEqual(807 , 428 , 255 , 186 , 0)
                     ){
                 lv("角色在位置2,并且已选中")
                 return 2
@@ -110,13 +124,14 @@ class BitmapCompare54e(bitmap : Bitmap) : BaseBitmapCompare(bitmap) {
     }
 
     fun isCharactorAtLocation3() : Int{
-        if (isPiexlEqual(117 , 392 , 255 , 255 , 255)
-                && isPiexlEqual(187 , 403 , 255 , 255 , 255)
-                && isPiexlEqual(241 , 413 , 255 , 255 , 255)
+        if (isPiexlEqual(258 , 523 , 255 , 255 , 255)
+                && isPiexlEqual(340 , 542 , 255 , 255 , 255)
+                && isPiexlEqual(469 , 550 , 255 , 255 , 255)
                 ){
-            if (isPiexlEqual(35 , 343 , 255 , 186 , 0)
-                    && isPiexlEqual(151 , 463 , 255 , 186 , 0)
-                    && isPiexlEqual(36 , 578 , 255 , 190 , 0)
+            if (isPiexlEqual(59 , 594 , 255 , 186 , 0)
+                    && isPiexlEqual(179 , 469 , 255 , 186 , 0)
+                    && isPiexlEqual(291 , 595 , 255 , 186 , 0)
+                    && isPiexlEqual(178 , 695 , 255 , 186 , 0)
                     ){
                 lv("角色在位置3,并且已选中")
                 return 2
@@ -131,86 +146,42 @@ class BitmapCompare54e(bitmap : Bitmap) : BaseBitmapCompare(bitmap) {
             return 0
         }
     }
-    fun isCharactorAtLocation4_View1() : Boolean{
-        if (isPiexlEqual(143 , 786 , 255 , 255 , 255)
-                && isPiexlEqual(225, 805, 255 , 255 , 255)
-                && isPiexlEqual(269, 811 , 255 , 255 , 255)
+
+    fun isCharactorAtLocation4() : Int{
+        if (isPiexlEqual(1493 , 448 , 255 , 255 , 255)
+                && isPiexlEqual(1601 , 440 , 255 , 255 , 255)
+                && isPiexlEqual(1695 , 456 , 255 , 255 , 255)
                 ){
-            lv("在View1的视角下角色在位置4")
+            if (isPiexlEqual(1403 , 372 , 255 , 186 , 0)
+                    && isPiexlEqual(1402 , 615 , 255 , 186 , 0)
+                    && isPiexlEqual(1283 , 499 , 255 , 186 , 0)
+                    && isPiexlEqual(1525 , 501 , 255 , 186 , 0)
+                    ){
+                lv("角色在位置4,并且已选中")
+                return 2
+            }
+            else{
+                lv("角色在位置4,但是未选中")
+                return 1
+            }
+        }
+        else {
+            lv("角色不在不在不在不在位置4")
+            return 0
+        }
+    }
+
+    fun isCharactorAtLocation5() : Boolean{
+        if (isPiexlEqual(852 , 537 , 255 , 255 , 255)
+                && isPiexlEqual(959 , 525 , 255 , 255 , 255)
+                && isPiexlEqual(1051 , 547 , 255 , 255 , 255)
+                ){
+            lv("角色在位置5")
             return true
         }
         else {
-            lv("在View1的视角下角色不在不在不在不在位置4")
+            lv("角色不在不在不在不在位置5")
             return false
         }
     }
-    fun isCharactorAtLocation4_View2(correction : Int) : Int{
-        if (isPiexlEqual(152 , 270+correction , 255 , 255 , 255)
-                    && isPiexlEqual(235 , 272+correction , 255 , 255 , 255)
-                    && isPiexlEqual(261 , 259+correction , 255 , 255 , 255)
-                ){
-            lv("角色在视角2下的位置4,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(152 , 270+i , 255 , 255 , 255)
-                        && isPiexlEqual(235 , 272+i, 255 , 255 , 255)
-                        && isPiexlEqual(261 , 259+i, 255 , 255 , 255)
-                        ){
-                    lv("角色在视角2下的位置4,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色不在不在不在不在视角2下的位置4")
-            return -999
-        }
-    }
-
-    fun isCharactorAtLocation4_View2_selected(correction : Int) : Int{
-        if (isPiexlEqual(63 , 200+correction , 255 , 186 , 0)
-                && isPiexlEqual(176 , 323+correction , 255 , 186, 0)
-                && isPiexlEqual(63 , 431+correction , 255 , 186 , 0)
-                ){
-            lv("角色在视角2下的位置4并且被选中,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(63 , 200+i , 255 , 186 , 0)
-                        && isPiexlEqual(176 , 323+i, 255 , 186, 0)
-                        && isPiexlEqual(63 , 431+i, 255 , 186 , 0)
-                        ){
-                    lv("角色在视角2下的位置4并且被选中,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色在视角2下的位置4,并没有被选中")
-            return -999
-        }
-    }
-
-    fun isCharactorAtLocation5(correction: Int) : Int{
-        if (isPiexlEqual(128 , 594+correction , 255 , 255 , 255)
-            && isPiexlEqual(186 , 592+correction , 255 , 255 , 255)
-            && isPiexlEqual(328 , 604+correction , 255 , 255 , 255)
-                ){
-            lv("角色在位置5,需要竖直修正量$correction")
-            return correction
-        }
-        else {
-            for (i : Int in -30..30){
-                if (isPiexlEqual(128 , 594+i , 255 , 255 , 255)
-                        && isPiexlEqual(186 , 592+i, 255 , 255 , 255)
-                        && isPiexlEqual(328 , 604+i, 255 , 255 , 255)
-                        ){
-                    lv("角色在位置5,需要竖直修正量$i")
-                    return i
-                }
-            }
-            lv("角色不在不在不在不在位置5")
-            return -999
-        }
-    }
-
 }

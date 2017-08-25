@@ -293,8 +293,8 @@ open class BaseBitmapCompare(bitmap : Bitmap){
         if (isPiexlEqual(144 , 59 , 255 , 255 , 255)
                 && isPiexlEqual(280 , 45 , 115 , 117 , 115)
                 && isPiexlEqual(461 , 61 , 255 , 85 , 0)
-                && isPiexlEqual(1700 , 974 , 58 , 105 , 107)
-                && isPiexlEqual(1832 , 973 , 49 , 101 , 99)
+                && isPiexlEqual(1551 , 939 , 255 , 255 , 255)
+                && isPiexlEqual(1584, 949 , 255 , 255 , 255)
                 ){
             lv("是战斗界面")
             return true

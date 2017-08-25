@@ -437,7 +437,7 @@ class MainService : Service() {
                     }
                     else {
                         showToastAndLv("位置1上已经部署完毕,点击开始作战")
-//                        saveTap(1735, 985)
+                        saveTap(1735, 985)
                         waitSecond(3)
                     }
                 }
@@ -567,7 +567,153 @@ class MainService : Service() {
         }
     }
     fun handleBattleUI_54e(){
-
+        var stage = 1
+        while (mThread.keepRun){
+            showToastAndLv("判断当前界面")
+            var bitMapCompare = BitmapCompare54e(MainActivity.startCapture())
+            if (bitMapCompare.isBattleUI()){
+                if (stage < 4){
+                    if (!bitMapCompare.isViewAtLocation2()){
+                        showToastAndLv("当前视角不在位置1,调整视角")
+                        saveDrag(1500 , 300 , 500 , 800 , 500)
+                        waitSecond(1)
+                        saveDrag(1500 , 300 , 500 , 800 , 500)
+                        waitSecond(1)
+                    }
+                    else if (stage == 1){
+                        when (bitMapCompare.isCharactorAtLocation1()){
+                            0 -> {
+                                when (bitMapCompare.isCharactorAtLocation2()){
+                                    1,2 -> {
+                                        stage = 2
+                                        waitSecond(1)
+                                    }
+                                    0 -> {
+                                        showToastAndLv("在stage == 1时初始点上没有部队,错误,无法处理,等待10s")
+                                        waitSecond(10)
+                                    }
+                                }
+                            }
+                            1 -> {
+                                showToastAndLv("初始点上的部队没有被选中,点击初始点,再点击2号点")
+                                saveTap(1314 , 532)
+                                waitSecond(1)
+                                saveTap(681 , 461)
+                                waitSecond(5)
+                            }
+                            2 -> {
+                                showToastAndLv("初始点上的部队已经被选中,点击2号点以便行进至2号点")
+                                saveTap(681 , 461)
+                                waitSecond(5)
+                            }
+                        }
+                    }
+                    else if (stage == 2){
+                        when (bitMapCompare.isCharactorAtLocation2()){
+                            0 -> {
+                                when (bitMapCompare.isCharactorAtLocation3()){
+                                    1,2 -> {
+                                        stage = 3
+                                        waitSecond(1)
+                                    }
+                                    0 -> {
+                                        showToastAndLv("在stage == 2时2号点上没有部队,错误,无法处理,等待10s")
+                                        waitSecond(10)
+                                    }
+                                }
+                            }
+                            1 -> {
+                                showToastAndLv("2号点上的部队没有被选中,点击2号点再点击3号点")
+                                saveTap(681 , 461)
+                                waitSecond(1)
+                                saveTap(181 , 630)
+                                waitSecond(5)
+                            }
+                            2 -> {
+                                showToastAndLv("2号点上的部队已经被选中,点击3号点以便行进至3号点")
+                                saveTap(181 , 630)
+                                waitSecond(17)
+                            }
+                        }
+                    }
+                    else if (stage == 3){
+                        when (bitMapCompare.isCharactorAtLocation3()) {
+                            0 -> {
+                                showToastAndLv("在stage == 3时3号点上没有部队,错误,无法处理,等待10s")
+                                waitSecond(10)
+                            }
+                            1 -> {
+                                showToastAndLv("3号点上的部队没有被选中,点击3号点以便选中")
+                                saveTap(181, 630)
+                                waitSecond(2)
+                            }
+                            2 -> {
+                                stage = 4
+                                waitSecond(1)
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (!bitMapCompare.isViewAtLocation3()) {
+                        showToastAndLv("当前视角不在位置3,调整视角")
+                        saveDrag(300, 300, 1500, 800, 500)
+                        waitSecond(1)
+                        saveDrag(300, 300, 1500, 800, 500)
+                        waitSecond(1)
+                    } else if (stage == 4) {
+                        when (bitMapCompare.isCharactorAtLocation4()) {
+                            0 -> {
+                                showToastAndLv("角色不在4号点,点击4号点")
+                                saveTap(1407, 535)
+                                waitSecond(2)
+                            }
+                            else -> {
+                                stage = 5
+                                waitSecond(1)
+                            }
+                        }
+                    } else if (stage == 5) {
+                        when (bitMapCompare.isCharactorAtLocation4()) {
+                            0 -> {
+                                if (bitMapCompare.isCharactorAtLocation5()) {
+                                    showToastAndLv("部队已经行进至5号点点击结束回合")
+                                    saveTap(1751, 997)
+                                    waitSecond(5)
+                                } else {
+                                    showToastAndLv("在stage == 5时4号5号点上都没有部队,错误,无法处理,等待10s")
+                                    waitSecond(10)
+                                }
+                            }
+                            1 -> {
+                                showToastAndLv("4号点上的部队没有被选中,点击4号点再点击5号点")
+                                saveTap(1407, 535)
+                                waitSecond(1)
+                                saveTap(755, 633)
+                                waitSecond(5)
+                            }
+                            2 -> {
+                                showToastAndLv("4号点上的部队已经被选中,点击5号点以便行进至5号点")
+                                saveTap(755, 633)
+                                waitSecond(17)
+                            }
+                        }
+                    }
+                }
+            }
+            else if (bitMapCompare.isMainUI()){
+                bitMapCompare.recycle()
+                return
+            }
+            else {
+                if (!handleExpeditionFinishUI(bitMapCompare)){
+                    showToastAndLv("未知界面,可能是战斗界面或者结算界面或者获得新枪界面等等,点击屏幕中心")
+                    saveTap(895 , 575 , 200 , 200)
+                    waitSecond(3)
+                }
+            }
+            bitMapCompare.recycle()
+        }
     }
     fun handleBattleUI_52e(){
         var verticalCorrection = 0
@@ -606,7 +752,7 @@ class MainService : Service() {
                             1 -> {
                                 showToastAndLv("初始点上的部队没有被选中,点击初始点以便选中")
                                 saveTap(1222 , 509)
-                                waitSecond(1)
+                                waitSecond(2)
                             }
                             2 -> {
                                 showToastAndLv("初始点上的部队已经被选中,点击2号点以便行进至2号点")
@@ -632,7 +778,7 @@ class MainService : Service() {
                             1 -> {
                                 showToastAndLv("2号点上的部队没有被选中,点击2号点以便选中")
                                 saveTap(616 , 419)
-                                waitSecond(1)
+                                waitSecond(2)
                             }
                             2 -> {
                                 showToastAndLv("2号点上的部队已经被选中,点击3号点以便行进至3号点")
@@ -655,7 +801,7 @@ class MainService : Service() {
                             1 -> {
                                 showToastAndLv("3号点上的部队没有被选中,点击3号点以便选中")
                                 saveTap(33, 511)
-                                waitSecond(1)
+                                waitSecond(2)
                             }
                             2 -> {
                                 showToastAndLv("3号点上的部队已经被选中,点击4号点以便行进至4号点")
@@ -674,7 +820,7 @@ class MainService : Service() {
                         saveDrag(1000 , 300 , 400 , 800 , 1000)
                         waitSecond(1)
                         saveDrag(1200 , 900 , 1100 , 300 , 2000)
-                        waitSecond(3)
+                        waitSecond(4)
                         verticalCorrection = 0
                     }
                     else {
@@ -688,7 +834,7 @@ class MainService : Service() {
                                 saveDrag(1000 , 300 , 400 , 800 , 1000)
                                 waitSecond(1)
                                 saveDrag(1200 , 900 , 1200 , 300 , 2000)
-                                waitSecond(3)
+                                waitSecond(4)
                                 verticalCorrection = 0
                             }
                             else {
@@ -701,7 +847,7 @@ class MainService : Service() {
                             if (bitMapCompare.isCharactorAtLocation4_View2_selected(verticalCorrection) == -999){
                                 showToastAndLv("4号点上的部队未选中,点击4号点以便选中")
                                 saveTap(57 , 347 + verticalCorrection)
-                                waitSecond(1)
+                                waitSecond(2)
                             }
                             else {
                                 showToastAndLv("4号点上的部队已经被选中,点击5号点以便行进至5号点")
