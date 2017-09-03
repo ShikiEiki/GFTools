@@ -1,64 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+    <data>
+    </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         >
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="200px"
-            android:text="GFTools ver0.1\n开始运行程序"
-            android:textSize="50px"
-            android:onClick="startProgram"
-            />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="200px"
-            android:text="配置"
-            android:textSize="50px"
-            android:onClick="config"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="调试按钮区"
+                android:layout_gravity="center_horizontal"/>
+            <ImageView
+                android:id="@+id/imgview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_blue_light"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/debug_btn1"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="200px"
+                    android:text="debug1"
+                    android:textSize="50px"
+                    android:onClick="onDebugBtn1Click"
+                    />
+                <Button
+                    android:id="@+id/debug_btn2"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="200px"
+                    android:text="debug2"
+                    android:textSize="50px"
+                    android:onClick="onDebugBtn2Click"
+                    />
+                <Button
+                    android:id="@+id/debug_btn3"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="200px"
+                    android:text="debug3"
+                    android:textSize="50px"
+                    android:onClick="onDebugBtn3Click"
+                    />
+            </LinearLayout>
+        </LinearLayout>
         <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
             android:background="@android:color/black"
             android:layout_margin="20px"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="调试按钮区"/>
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <Button
-                android:layout_width="300px"
-                android:layout_height="200px"
-                android:text="Btn2"
-                android:textSize="50px"
-                android:onClick="onBtn2Click"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="少前脚本精灵-GFToos"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:layout_gravity="center_horizontal"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:text="Version : "
+                android:layout_gravity="right"
+                android:layout_marginRight="30dp"
                 />
-            <Button
-                android:layout_width="300px"
-                android:layout_height="200px"
-                android:text="Btn3"
-                android:textSize="50px"
-                android:onClick="onBtn3Click"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="主功能区"
+                android:layout_gravity="center_horizontal"
                 />
-            <Button
-                android:layout_width="300px"
-                android:layout_height="200px"
-                android:text="Btn4"
-                android:textSize="50px"
-                android:onClick="onBtn4Click"
+            <TextView
+                android:id="@+id/log_tv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="日志"
                 />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/config_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="400px"
+                    android:layout_weight="1"
+                    android:text="配置"
+                    android:textSize="50px"
+                    android:onClick="onConfigBtnClick"
+                    />
+                <Button
+                    android:id="@+id/main_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="400px"
+                    android:textSize="50px"
+                    android:onClick="onMainBtnClick"
+                    android:text="主按钮"
+                    android:layout_weight="2"
+                    />
+            </LinearLayout>
         </LinearLayout>
-        <ImageView
-            android:id="@+id/imgview"
-            android:layout_width="500px"
-            android:layout_height="500px"
-            android:background="@android:color/holo_blue_light"/>
     </LinearLayout>
 </layout>

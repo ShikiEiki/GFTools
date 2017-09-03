@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.support.v7.app.NotificationCompat
@@ -17,11 +18,32 @@ import com.gftools.utils.*
  * Created by FH on 2017/8/1.
  */
 class MainService : Service() {
+    enum class UI{
+        REPAIRE,
+        FACTORY,
+        CHOOSE_COMBAT,
+        MAIN
+    }
     var mHandler = Handler()
     var toast : Toast? = null
     var ready = false
     val mThread = MyThread()
     lateinit var tempBitmapCompare : BaseBitmapCompare
+    var mOnStatusChangedListener : OnStatusChangedListener? = null
+
+    var mainActivity : MainActivity? = null
+    var mBinder : MyBinder = MyBinder()
+
+    inner class MyBinder : Binder(){
+        fun getService() : MainService{
+            return this@MainService
+        }
+    }
+
+    interface OnStatusChangedListener{
+        fun onStatusChanged(status : Int)
+        fun reportCurrentAction(action : String)
+    }
 
     inner class MyThread : Thread(){
         var keepRun = true
@@ -41,12 +63,12 @@ class MainService : Service() {
             //---------------进入主界面--------------
             while (keepRun){
                 //---------------进入维修界面,完毕后回到主界面----------------
-                handleMainUI(MainActivity.UI.REPAIRE)
+                handleMainUI(UI.REPAIRE)
                 //---------------进入战斗选择界面---------------------------
                 while (keepRun) {
-                    var tempResult = handleMainUI(MainActivity.UI.CHOOSE_COMBAT)
+                    var tempResult = handleMainUI(UI.CHOOSE_COMBAT)
                     if (tempResult == -1) {
-                        handleMainUI(MainActivity.UI.FACTORY)
+                        handleMainUI(UI.FACTORY)
                     } else if (tempResult == -2) {
                         showToastAndLv("现在设置的梯队${GFTools.getMainForceIndex()}无法作战,可能是正在维修等等原因,等待300s")
                         waitSecond(300)
@@ -57,39 +79,63 @@ class MainService : Service() {
             }
         }
         override fun run() {
+            mOnStatusChangedListener?.onStatusChanged(1)
             sendRunningNotification()
             work()
             MainActivity.mMediaProjection.stop()
             MainActivity.mVirturlDisplay.release()
             showToastAndLv("已停止")
+            mOnStatusChangedListener?.onStatusChanged(0)
             sendRunAgainNotification()
         }
     }
 
+    fun startScript(){
+        lv("调用MainService中的startScript")
+        if (!mThread.isAlive){
+            mThread.keepRun = true
+            mThread.start()
+        }
+    }
+
+    fun stopScript(){
+        mThread.stopThis()
+    }
+
+    fun setStatusListener(onStatusChangedListener: OnStatusChangedListener){
+        mOnStatusChangedListener = onStatusChangedListener
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         lv("onStartCommand function : ${intent?.getStringExtra("function")}")
-        when(intent?.getStringExtra("function")){
-            "start" -> {
-                if (!mThread.isAlive){
-                    mThread.keepRun = true
-                    mThread.start()
-                }
-            }
-            "stop" -> {
-                mThread.stopThis()
-            }
-            "startAgain" -> {
-                MainActivity.activityInstance.sendCaptureIntent(10086)
-            }
-        }
+//        when(intent?.getStringExtra("function")){
+//            "start" -> {
+//                if (!mThread.isAlive){
+//                    mThread.keepRun = true
+//                    mThread.start()
+//                }
+//            }
+//            "stop" -> {
+//                mThread.stopThis()
+//            }
+//            "startAgain" -> {
+//                MainActivity.activityInstance.sendCaptureIntent(10086)
+//            }
+//        }
         return super.onStartCommand(intent, flags, startId)
     }
+
     override fun onBind(intent: Intent?): IBinder? {
         lv("onBind")
-        return null
+        return mBinder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        lv("onUnbind")
+        mainActivity = null
+        return super.onUnbind(intent)
     }
     override fun onCreate() {
-        lv("onCreate")
         super.onCreate()
     }
     fun sendRunAgainNotification() {
@@ -1212,12 +1258,12 @@ class MainService : Service() {
      *
      *
      */
-    fun handleMainUI(goto : MainActivity.UI) : Int{
+    fun handleMainUI(goto : UI) : Int{
         var errorCode : Int = 1
         while (mThread.keepRun){
             showToastAndLv("判断当前界面")
             var bitMapCompare = BaseBitmapCompare(MainActivity.startCapture())
-            if (goto == MainActivity.UI.CHOOSE_COMBAT){
+            if (goto == UI.CHOOSE_COMBAT){
                 if (bitMapCompare.isMainUI()){
                     if (errorCode < 0){
                         bitMapCompare.recycle()
@@ -1261,7 +1307,7 @@ class MainService : Service() {
                     }
                 }
             }
-            else if (goto == MainActivity.UI.FACTORY){
+            else if (goto == UI.FACTORY){
                 if (bitMapCompare.isFactoryUI() != 0){
                     handleGunDisassemble(bitMapCompare)
                     bitMapCompare.recycle()
@@ -1279,7 +1325,7 @@ class MainService : Service() {
                     }
                 }
             }
-            else if (goto == MainActivity.UI.REPAIRE){
+            else if (goto == UI.REPAIRE){
                 if (bitMapCompare.isMainUI()){
                     if (bitMapCompare.isRedDotInRepairBtnInMainUI()){
                         handleRepairUI()

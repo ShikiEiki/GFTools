@@ -61,7 +61,7 @@ class ConfigActivity : Activity(){
         adapter3.add("第三梯队")
         adapter3.add("第四梯队")
         binding.cannonFodderSpinner.adapter = adapter3
-        binding.cannonFodderSpinner.setSelection(GFTools.getMainForceIndex())
+        binding.cannonFodderSpinner.setSelection(GFTools.getCannonFodderIndex())
         binding.cannonFodderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
