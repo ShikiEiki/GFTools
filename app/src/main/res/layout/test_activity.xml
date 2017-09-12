@@ -4,12 +4,18 @@
 
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:orientation="horizontal" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/holo_blue_light">
         <com.gftools.CircleProgressBar
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+        <com.gftools.RoundnessProgressBar
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             />
     </LinearLayout>
 </layout>

@@ -113,15 +113,8 @@ class MainActivity : BaseActivity() {
     }
 
     fun onDebugBtn1Click(view: View){
+        openActivity(TestActivity::class.java)
     }
-
-
-
-
-
-
-
-
 
     fun onDebugBtn2Click(view: View){
 
@@ -190,6 +183,4 @@ class MainActivity : BaseActivity() {
                 , mScreenWidth , mScreenHeight , mScreenDensity
                 , DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR , mImgReader.surface , null , null)
     }
-
-
 }

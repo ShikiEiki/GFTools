@@ -5,12 +5,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import static com.gftools.utils.UtilsKt.*;
 
@@ -60,6 +60,7 @@ public class CircleProgressBar extends View{
         return mPaint;
     }
     private void init(){
+        //测试进度条走动
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,54 +104,49 @@ public class CircleProgressBar extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         Log.v("FH" , "onDraw");
-//        //进度条半径
-//        float radius = (mWidth > mHeight ? mHeight : mWidth) / 2;
-//        float scale = radius / 540;
-//        if (radius <= 0){
-//            //进度条半径为0的时候啥都不画
-//            return;
-//        }
-//        //进度条粗细
-//        float lineWidth = 50*scale;
-//        float padding = 30*scale;
-//        RectF oval = new RectF(mWidth/2-radius+padding , mHeight/2-radius+padding , mWidth/2+radius-padding, mHeight/2+radius-padding);
-//        canvas.drawArc(oval , 0 , 360 , false , getPaint(Color.GRAY , Paint.Style.STROKE, lineWidth , 0));
-//        canvas.drawArc(oval , 270 , progress*360/100 , false , getPaint(0xffff6521 , Paint.Style.STROKE , lineWidth , 0));
-//        StringBuilder sb = new StringBuilder(progress+ "%");
-//        while (sb.length() < 4){
-//            sb.insert(0 , " ");
-//        }
-//        float textSize = 300*scale;
-//        canvas.drawText(sb.toString() , mWidth/2 - 350*scale , mHeight/2 + 120*scale ,
-//                getPaint(0xffff6521 , Paint.Style.FILL, lineWidth , textSize));
+        //进度条半径
+        float radius = (mWidth > mHeight ? mHeight : mWidth) / 2;
+        //这个缩放值是调试调出来的
+        float scale = radius / 540;
+        if (radius <= 0){
+            //进度条半径为0的时候啥都不画
+            return;
+        }
+        //进度条粗细
+        float lineWidth = 50*scale;
+        //由于圆线条有粗细,所以需要留够一定的padding值,否则圆线条会超出控件
+        float padding = 30*scale;
+        RectF oval = new RectF(mWidth/2-radius+padding , mHeight/2-radius+padding , mWidth/2+radius-padding, mHeight/2+radius-padding);
+        //先画底层圆
+        canvas.drawArc(oval , 0 , 360 , false , getPaint(Color.GRAY , Paint.Style.STROKE, lineWidth , 0));
+        //再画实际进度圆弧
+        canvas.drawArc(oval , 270 , progress*360/100 , false , getPaint(0xffff6521 , Paint.Style.STROKE , lineWidth , 0));
+        StringBuilder sb = new StringBuilder(progress+ "%");
+        //写字,如果字符少于4个,添加空格至4个字符
+        while (sb.length() < 4){
+            sb.insert(0 , " ");
+        }
+        float textSize = 300*scale;
+        canvas.drawText(sb.toString() , mWidth/2 - 350*scale , mHeight/2 + 120*scale ,
+                getPaint(0xffff6521 , Paint.Style.FILL, lineWidth , textSize));
 
-
-        Path path = new Path();
-        path.moveTo(10 , 10);
-        path.lineTo(100, 100);
-        path.lineTo(200 , 10);
-        path.lineTo(300 , 100);
-        path.lineTo(400 , 10);
-        path.lineTo(400 , 200);
-        path.lineTo(10 , 200);
-        path.lineTo(10 , 10);
-
-        canvas.drawPath(path , getPaint(Color.LTGRAY , Paint.Style.FILL, 1 , 0));
     }
 
     private ValueAnimator mAnimator;
 
     public void startAnimation(){
-        mAnimator = ValueAnimator.ofFloat(0 , 100);
+        mAnimator = ValueAnimator.ofInt(0 , 100);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                lv("animate : " + animation.getAnimatedValue());
-                setProgress((int)(float)animation.getAnimatedValue());
+                int value = (int) animation.getAnimatedValue();
+                lv("animate : " + value);
+                setProgress(value);
             }
         });
         mAnimator.setRepeatCount(-1);
         mAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mAnimator.setInterpolator(new LinearInterpolator());
         mAnimator.setDuration(5000);
         mAnimator.start();
     }
